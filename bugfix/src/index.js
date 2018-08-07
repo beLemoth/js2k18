@@ -10,7 +10,20 @@
  Зарпещено использовать встроенные методы для работы с массивами
  */
 function isAllTrue(array, fn) {
-		
+
+	if(!(array instanceof Array) || !array.length) {
+		throw new Error('empty array');
+	}
+
+	if(!(fn instanceof Function)) {
+		throw new Error('fn is not a function');
+	}
+
+	for(let idx=0; idx < array.length; idx++) {
+		if (!fn(array[idx])) return false;
+	};
+
+	return true;
 }
 
 /*
@@ -23,6 +36,19 @@ function isAllTrue(array, fn) {
  Зарпещено использовать встроенные методы для работы с массивами
  */
 function isSomeTrue(array, fn) {
+	if(!(array instanceof Array) || !array.length) {
+		throw new Error('empty array');
+	}
+
+	if(!(fn instanceof Function)) {
+		throw new Error('fn is not a function');
+	}
+
+	for(let idx=0; idx < array.length; idx++) {
+		if (fn(array[idx])) return true;
+	};
+
+	return false;
 }
 
 /*
@@ -34,6 +60,22 @@ function isSomeTrue(array, fn) {
  - fn не является функцией (с текстом "fn is not a function")
  */
 function returnBadArguments(fn) {
+
+	let exceptArgs = [];
+
+	if(!(fn instanceof Function)) throw new Error('fn is not a function');
+
+	let args = Array.prototype.slice.call(arguments, 1);
+
+	args.map( function(arg) {
+		try {
+			fn(arg);
+		} catch (e) {
+			exceptArgs.push(arg);
+		}
+	})
+
+	return exceptArgs;
 }
 
 /*
@@ -50,7 +92,39 @@ function returnBadArguments(fn) {
  - number не является числом (с текстом "number is not a number")
  - какой-либо из аргументов div является нулем (с текстом "division by 0")
  */
-function calculator() {
+function calculator(number) {
+
+	number = number || 0;
+
+	if(typeof number !== 'number') throw new Error('number is not a number');
+
+	return {
+		sum : function() {
+			Array.prototype.forEach.call(arguments, (curNum) => {
+				number += curNum;
+			});
+			return number;
+		},
+		dif : function() {
+			Array.prototype.forEach.call(arguments, (curNum) => {
+				number -= curNum;
+			});
+			return number;
+		},
+		div : function() {
+			Array.prototype.forEach.call(arguments, (curNum) => {
+				if(curNum === 0) throw new Error('division by 0');
+				number /= curNum;
+			});
+			return number;
+		},
+		mul : function() {
+			Array.prototype.forEach.call(arguments, (curNum) => {
+				number = (number) ? (number * curNum) : curNum;
+			});	
+			return number;
+		}
+	}
 }
 
 export {
